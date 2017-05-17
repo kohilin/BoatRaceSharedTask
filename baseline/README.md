@@ -18,12 +18,15 @@
 
 ## How to run
 ### Run the baseline models
-- ./BaselineBoatRacePredictor -H -E test.tsv (for heuristic choose)
-- ./BaselineBoatRacePredictor -M -e -E test.tsv --model ../model/tan2_mlp.params (for predict 2-Rentan)
-- ./BaselineBoatRacePredictor -M -e -E test.tsv --model ../model/tan3_mlp.params -s (for predict 3-Rentan)
+- ./BaselineBoatRacePredictor -H -P /your/path/to/data (for heuristic choose)
+- ./BaselineBoatRacePredictor -M -e -P /your/path/to/data --model ../model/tan2_mlp.params (for predict 2-Rentan)
+- ./BaselineBoatRacePredictor -M -e -P /your/path/to/data --model ../model/tan3_mlp.params -s (for predict 3-Rentan)
+> A directory given with -P option has to include train, dev, test files.
+
+> You can also set data respectively with -T -D -E options, but the system needs all files regardless of training or evaluation
 
 ### Train multi layer perceptron
-- ./BaselineBoatRacePredictor -M -t -T train.tsv -D dev.tsv
+- ./BaselineBoatRacePredictor -M -t -P /your/path/to/data -D dev.tsv
 > Sorry still not support to adjust hyper parameter flexibly, but I will do sooner or later
 
 ## Results of the baselines
