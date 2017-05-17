@@ -55,6 +55,6 @@ From top 9
 
 
 ### Multi Layer Perceptron
-- 2-Rentan : 22.3%
+- 2-Rentan : 21.4%
 - 3-Rentan : 8.1%
 > See http://ryosuke-k.chobi.net/BoatRaceSharedTask/baseline.html for model description
