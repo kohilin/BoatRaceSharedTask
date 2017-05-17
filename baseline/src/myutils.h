@@ -204,6 +204,8 @@ namespace myutil {
                  "Development data, this would be *.dataAll-dev-clean.tsv")
                 ("eval_data,E", PO::value<std::string>(),
                  "Evaluation data, this would be *.dataAll-test-clean.tsv")
+                 ("path,P", PO::value<std::string>(),
+                 "Path to a directory contains train, dev, enaluation data")
                 ("train,t",
                  "Should training be run?")
                 ("evaluation,e",
@@ -228,8 +230,18 @@ namespace myutil {
             exit(1);
         }
 
-        if (conf.count("heuristic_choose") && !conf.count("eval_data")) {
+        if (conf.count("heuristic_choose") && !conf.count("eval_data") && !conf.count("path")) {
             cerr << "You need to set a data as evaluation data for heuristic_choose option" << endl;
+            exit(1);
+        }
+
+        if (!conf.count("train_data") && !conf.count("path")){
+            cerr << "You need the training data to set player ID in the same, even though you do not train" << endl;
+            exit(1);
+        }
+
+        if (conf.count("train") && conf.count("evaluation")){
+            cerr << "You cannot do training and evaluation on the same time" << endl;
             exit(1);
         }
 
@@ -281,7 +293,12 @@ namespace myutil {
     };
 
     void run_most_popular(const PO::variables_map &conf) {
-        std::vector<Race> dev_races = myutil::load_data(conf["eval_data"].as<string>());
+        std::vector<Race> dev_races;
+        if (conf.count("path")){
+                dev_races = myutil::load_data(conf["path"].as<string>() + "/2017-5-17-BR-test-clean.tsv");
+        }else{
+                dev_races = myutil::load_data(conf["eval_data"].as<string>());
+    }
         cerr << "### most_popular_choice : " << endl;
 
         unsigned tan2_correct(0);
@@ -301,7 +318,13 @@ namespace myutil {
     }
 
     void run_random_choice_from_populars(const PO::variables_map &conf) {
-        std::vector<Race> dev_races = myutil::load_data(conf["eval_data"].as<string>());
+        std::vector<Race> dev_races;
+        if (conf.count("path")){
+            dev_races = myutil::load_data(conf["path"].as<string>() + "/2017-5-17-BR-test-clean.tsv");
+        }else{
+
+             dev_races = myutil::load_data(conf["eval_data"].as<string>());
+         }
 
         cerr << "### random_choice_from_populars : " << endl;
 
@@ -365,18 +388,33 @@ namespace myutil {
 
         dynet::initialize(argc, argv);
 
-        if (conf.count("train")) {
+        std::vector<Race> train_races, dev_races, eval_races;
 
+        if (conf.count("path")){
+            string PATH = conf["path"].as<string>();
+            train_races = myutil::load_data(PATH + "/2017-5-17-BR-train-clean.tsv");
+            dev_races = myutil::load_data(PATH + "/2017-5-17-BR-dev-clean.tsv");
+            eval_races = myutil::load_data(PATH + "/2017-5-17-BR-test-clean.tsv");
+
+        }else{
             std::vector<Race> train_races = myutil::load_data(conf["train_data"].as<string>());
             std::vector<Race> dev_races = myutil::load_data(conf["dev_data"].as<string>());
+            std::vector<Race> eval_races = myutil::load_data(conf["eval_data"].as<string>());
+        }
+        std::vector<std::vector<float>> br_train_reps;
+        std::vector<unsigned> br_train_ress;
+        std::tie(br_train_reps, br_train_ress) = myutil::get_representations(train_races, conf.count("tan3"));
 
-            std::vector<std::vector<float>> br_train_reps;
-            std::vector<unsigned> br_train_ress;
-            std::vector<std::vector<float>> br_dev_reps;
-            std::vector<unsigned> br_dev_ress;
+        std::vector<std::vector<float>> br_dev_reps;
+        std::vector<unsigned> br_dev_ress;
+        std::tie(br_dev_reps, br_dev_ress) = myutil::get_representations(dev_races, conf.count("tan3"));
 
-            std::tie(br_train_reps, br_train_ress) = myutil::get_representations(train_races, conf.count("tan3"));
-            std::tie(br_dev_reps, br_dev_ress) = myutil::get_representations(dev_races, conf.count("tan3"));
+
+        std::vector<std::vector<float>> br_eval_reps;
+        std::vector<unsigned> br_eval_ress;
+        std::tie(br_eval_reps, br_eval_ress) = myutil::get_representations(eval_races, conf.count("tan3"));
+
+        if (conf.count("train")) {
 
             dynet::Model model;
 
@@ -599,13 +637,6 @@ namespace myutil {
         }
 
         if (conf.count("evaluation")) {
-
-            std::vector<Race> eval_races = myutil::load_data(conf["eval_data"].as<string>());
-
-            std::vector<std::vector<float>> br_eval_reps;
-            std::vector<unsigned> br_eval_ress;
-
-            std::tie(br_eval_reps, br_eval_ress) = myutil::get_representations(eval_races, conf.count("tan3"));
 
             dynet::Model model;
 

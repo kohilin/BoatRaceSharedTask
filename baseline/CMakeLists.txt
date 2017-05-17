@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(BaselineBoatRacePredictor)
 
 set(CMAKE_CXX_STANDARD 14 )
-SET(CMAKE_CXX_FLAGS "-std=c++14 -lboost_program_options -lboost_date_time -lboost_serialization -ldynet")
+SET(CMAKE_CXX_FLAGS "-std=c++14 -O3 -lboost_program_options -lboost_date_time -lboost_serialization -ldynet")
 
 # look for Eigen
 get_filename_component(EIGEN3_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
@@ -33,4 +33,3 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(SOURCE_FILES main.cpp src/myutils.h src/str2id.h src/race.h src/player.h src/mlp.h)
 add_executable(BaselineBoatRacePredictor ${SOURCE_FILES} ${Boost_LIBRARIES})
 target_link_libraries(BaselineBoatRacePredictor ${Boost_LIBRARIES} dynet)
-
