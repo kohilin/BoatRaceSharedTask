@@ -47,7 +47,7 @@ From top 5
 
 From top 9
 - 2-Rentan : 6.1%
-- 3-Rentan : 5.1
+- 3-Rentan : 5.1%
 > Average scores for 10 iterations
 
 
