@@ -26,7 +26,7 @@
 > You can also set data respectively with -T -D -E options, but the system needs all files regardless of training or evaluation
 
 ### Train multi layer perceptron
-- ./BaselineBoatRacePredictor -M -t -P /your/path/to/data -D dev.tsv
+- ./BaselineBoatRacePredictor -M -t -P /your/path/to/data
 > Sorry still not support to adjust hyper parameter flexibly, but I will do sooner or later
 
 ## Results of the baselines
